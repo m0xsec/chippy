@@ -1,6 +1,7 @@
 package main
 
 import (
+	"chippy/pkg/chip8"
 	"fmt"
 
 	"github.com/veandco/go-sdl2/sdl"
@@ -17,20 +18,32 @@ func main() {
 
 	// Create SDL2 window
 	window, err := sdl.CreateWindow("chippy <3", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
-		800, 600, sdl.WINDOW_SHOWN)
+		chip8.DISPLAY_WIDTH*chip8.DISPLAY_MODIFIER, chip8.DISPLAY_HEIGHT*chip8.DISPLAY_MODIFIER,
+		sdl.WINDOW_SHOWN)
 	if err != nil {
 		panic(err)
 	}
 	defer window.Destroy()
 
-	// TODO: Create SDL2 renderer
+	// Create SDL2 renderer
+	renderer, err := sdl.CreateRenderer(window, -1, sdl.RENDERER_ACCELERATED)
+	if err != nil {
+		panic(err)
+	}
+	defer renderer.Destroy()
 
 	// Emulator loop
 	emulating := true
 	for emulating {
 		// TODO: CHIP-8 Fetch/decode/execution loop
 
-		// TODO: CHIP-8 Drawing -- Utilize SDL2 renderer
+		// TODO: CHIP-8 Drawing -- Utilize SDL2 renderer to draw CHIP-8 screen
+		// NOTE: We should only draw if required.
+
+		// Testing of rendering -- this should be removed later
+		renderer.SetDrawColor(0, 0, 0, 255)
+		renderer.Clear()
+		renderer.Present()
 
 		// Event handling
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {

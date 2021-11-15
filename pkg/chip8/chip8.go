@@ -1,6 +1,9 @@
 package chip8
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+)
 
 // CHIP-8 Display Width 64px
 const DISPLAY_WIDTH int32 = 64
@@ -86,4 +89,46 @@ func Init() Chip8 {
 	}
 
 	return chippy
+}
+
+// Loads a CHIP-8 ROM into memory from the given file
+// Returns the size of the ROM, and an error if the ROM is invalid
+func (c *Chip8) LoadROM(file string) (int64, error) {
+	// Read ROM File
+	rom, err := os.OpenFile(file, os.O_RDONLY, 0644)
+	if err != nil {
+		return -1, err
+	}
+	defer rom.Close()
+
+	// Make sure the ROM is the correct size, given that we
+	// load into memory starting at 0x200
+	stat, err := rom.Stat()
+	if err != nil {
+		return -1, err
+	}
+	if int64(len(c.Memory)-0x200) < stat.Size() {
+		return -1, fmt.Errorf("ROM is too large to fit in memory :(")
+	}
+
+	// Read the ROM into memory, starting at 0x200
+	fmt.Println("Loading ROM into memory...")
+	buffer := make([]byte, stat.Size())
+	if _, err := rom.Read(buffer); err != nil {
+		return -1, err
+	}
+	for i := 0; i < len(buffer); i++ {
+		c.Memory[i+0x200] = buffer[i]
+	}
+
+	return stat.Size(), nil
+}
+
+// Cycle the CHIP-8 CPU
+func (c *Chip8) Cycle() {
+	// TODO: Implement CHIP-8 CPU
+
+	// TODO: Handle Delay Timer
+
+	// TODO: Handle Sound Timer w/ Beeping
 }

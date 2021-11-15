@@ -32,6 +32,14 @@ func main() {
 	}
 	defer renderer.Destroy()
 
+	// Initilaize CHIP-8 and load ROM :3
+	chippy := chip8.Init()
+	size, err := chippy.LoadROM("./roms/test_opcode.ch8")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Loaded %d bytes! <3\n", size)
+
 	// Emulator loop
 	emulating := true
 	for emulating {

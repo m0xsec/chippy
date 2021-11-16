@@ -160,12 +160,14 @@ func (c *Chip8) Cycle() {
 	fmt.Printf("[0x%X]\n", c.oc)
 
 	// Decode & Execute Opcode
+	// Ex: 0xA2F0 & 0xF000 -> 0xA000
 	switch c.oc & 0xF000 {
 	// Instrucutions starting with 0x0
 	// 0x00E0 - Clear the display
 	// 0x00EE - Return from a subroutine
 	case 0x0000:
 		// Need to compare the last 4 bits of the opcode
+		// Ex: 0x000E & 0x000F-> 0x000E
 		switch c.oc & 0x000F {
 		case 0x0000: // 0x00E0 Clear the display
 			for h := 0; h < len(c.display); h++ {
@@ -199,8 +201,40 @@ func (c *Chip8) Cycle() {
 		c.pc += 2
 
 	case 0xD000: // 0xDXYN Display (Drawing)
-		// TODO: Implement 0xDXYN
-		//c.pc += 2
+		// Fetch (X,Y) from VX and VY
+		x := c.v[(c.oc&0x0F00)>>8] % uint8(DISPLAY_WIDTH)
+		y := c.v[(c.oc&0x00F0)>>4] % uint8(DISPLAY_HEIGHT)
+
+		// Fetch N from opcode (N is our height)
+		n := c.oc & 0x000F
+
+		// Reset VF Register
+		c.v[0xF] = 0
+
+		// Loop through the height (rows)
+		for i := 0; i < int(n); i++ {
+			// Fetch Nth byte of sprite data, at I register + i
+			byte := c.memory[c.i+uint16(i)]
+
+			// Each sprite row, there are 8 bits for each pixel
+			for j := 0; j < 8; j++ {
+				// Is the current pixel set?
+				if byte&(0x80>>uint8(j)) != 0 {
+					// Is that display pixel at X,Y also set?
+					if c.display[y+uint8(i)][x+uint8(j)] == 1 {
+						// Turn off the pixel, and set VF to 1
+						c.display[y+uint8(i)][x+uint8(j)] = 0
+						c.v[0xF] = 1
+					}
+
+					// Turn on display pixel
+					c.display[y+uint8(i)][x+uint8(j)] ^= 1
+				}
+			}
+		}
+
+		fmt.Printf("[0xDXYN] X: %d, Y: %d, N: %d\n", x, y, n)
+		c.pc += 2
 
 	// TODO: Implement remaining CHIP-8 insturctions
 

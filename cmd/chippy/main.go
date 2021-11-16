@@ -34,7 +34,7 @@ func main() {
 
 	// Initilaize CHIP-8 and load ROM :3
 	chippy := chip8.Init()
-	size, err := chippy.LoadROM("./roms/test_opcode.ch8")
+	size, err := chippy.LoadROM("./roms/ibm_logo.ch8")
 	if err != nil {
 		panic(err)
 	}
@@ -43,7 +43,8 @@ func main() {
 	// Emulator loop
 	emulating := true
 	for emulating {
-		// TODO: CHIP-8 Fetch/decode/execution loop
+		// CHIP-8 CPU Cycle (Fetch/Decode/Execute)
+		chippy.Cycle()
 
 		// TODO: CHIP-8 Drawing -- Utilize SDL2 renderer to draw CHIP-8 screen
 		// NOTE: We should only draw if required.

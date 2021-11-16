@@ -37,38 +37,42 @@ var fontset = []uint8{
 // CHIP-8
 type Chip8 struct {
 	// CHIP-8 has 4K of memory
-	Memory [4096]uint8
+	memory [4096]uint8
 
 	// CHIP-8 has a display that is 64x32
-	Display [DISPLAY_HEIGHT][DISPLAY_WIDTH]uint8
+	display [DISPLAY_HEIGHT][DISPLAY_WIDTH]uint8
 
 	// CHIP-8 Program Counter
 	// Points at the current instruction in memory
-	PC uint16
+	pc uint16
 
 	// CHIP-8 Index Register
 	// Used to point at locations in memory
-	I uint16
+	i uint16
 
 	// CHIP-8 Stack
 	// Follows LIFO, used to call and return from subroutines
-	Stack [16]uint16
+	stack [16]uint16
 
 	// CHIP-8 Delay Timer
 	// Decremented at 60Hz until it reaches 0
-	DT uint8
+	dt uint8
 
 	// CHIP-8 Sound Timer
 	// Decremented at 60Hz until it reaches 0
 	// Makes a beeping sound as long as it is not 0
-	ST uint8
+	st uint8
 
 	// CHIP-8 Registers
 	// 16 general purpose variable registers
 	// Each register is 8 bits
 	// Called V0, V1, V2, V3, V4, V5, V6, V7, V8, V9, VA, VB, VC, VD, VE, VF
 	// VF may be used as a flag register
-	V [16]uint8
+	v [16]uint8
+
+	// Current CHIP-8 Opcode
+	// Keeps track of the current instruction opcode
+	oc uint16
 }
 
 // Initializes the CHIP-8
@@ -79,13 +83,13 @@ func Init() Chip8 {
 		// from address 000 to 1FF. It would expect a CHIP-8 program to be
 		// loaded into memory after it, starting at address 200.
 		// For chippy, we will use 000 to 1FF for our font set :)
-		PC: 0x200,
+		pc: 0x200,
 	}
 
 	// Load fontset into memory
 	fmt.Println("Loading font set into memory...")
 	for i := 0; i < len(fontset); i++ {
-		chippy.Memory[i] = fontset[i]
+		chippy.memory[i] = fontset[i]
 	}
 
 	return chippy
@@ -107,7 +111,7 @@ func (c *Chip8) LoadROM(file string) (int64, error) {
 	if err != nil {
 		return -1, err
 	}
-	if int64(len(c.Memory)-0x200) < stat.Size() {
+	if int64(len(c.memory)-0x200) < stat.Size() {
 		return -1, fmt.Errorf("ROM is too large to fit in memory :(")
 	}
 
@@ -118,7 +122,7 @@ func (c *Chip8) LoadROM(file string) (int64, error) {
 		return -1, err
 	}
 	for i := 0; i < len(buffer); i++ {
-		c.Memory[i+0x200] = buffer[i]
+		c.memory[i+0x200] = buffer[i]
 	}
 
 	return stat.Size(), nil
@@ -127,6 +131,7 @@ func (c *Chip8) LoadROM(file string) (int64, error) {
 // Cycle the CHIP-8 CPU
 func (c *Chip8) Cycle() {
 	// TODO: Implement CHIP-8 CPU
+	// This is the fetch-decode-execute loop
 
 	// TODO: Handle Delay Timer
 

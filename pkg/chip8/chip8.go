@@ -1,5 +1,36 @@
 package chip8
 
+/*
+
+
+
+                   hhhhhhh               iiii
+                   h:::::h              i::::i
+                   h:::::h               iiii
+                   h:::::h
+    cccccccccccccccch::::h hhhhh       iiiiiiippppp   ppppppppp   ppppp   pppppppppyyyyyyy           yyyyyyy
+  cc:::::::::::::::ch::::hh:::::hhh    i:::::ip::::ppp:::::::::p  p::::ppp:::::::::py:::::y         y:::::y
+ c:::::::::::::::::ch::::::::::::::hh   i::::ip:::::::::::::::::p p:::::::::::::::::py:::::y       y:::::y
+c:::::::cccccc:::::ch:::::::hhh::::::h  i::::ipp::::::ppppp::::::ppp::::::ppppp::::::py:::::y     y:::::y
+c::::::c     ccccccch::::::h   h::::::h i::::i p:::::p     p:::::p p:::::p     p:::::p y:::::y   y:::::y
+c:::::c             h:::::h     h:::::h i::::i p:::::p     p:::::p p:::::p     p:::::p  y:::::y y:::::y
+c:::::c             h:::::h     h:::::h i::::i p:::::p     p:::::p p:::::p     p:::::p   y:::::y:::::y
+c::::::c     ccccccch:::::h     h:::::h i::::i p:::::p    p::::::p p:::::p    p::::::p    y:::::::::y
+c:::::::cccccc:::::ch:::::h     h:::::hi::::::ip:::::ppppp:::::::p p:::::ppppp:::::::p     y:::::::y
+ c:::::::::::::::::ch:::::h     h:::::hi::::::ip::::::::::::::::p  p::::::::::::::::p       y:::::y
+  cc:::::::::::::::ch:::::h     h:::::hi::::::ip::::::::::::::pp   p::::::::::::::pp       y:::::y
+    cccccccccccccccchhhhhhh     hhhhhhhiiiiiiiip::::::pppppppp     p::::::pppppppp        y:::::y
+                                               p:::::p             p:::::p               y:::::y
+                                               p:::::p             p:::::p              y:::::y
+                                              p:::::::p           p:::::::p            y:::::y
+                                              p:::::::p           p:::::::p           y:::::y
+                                              p:::::::p           p:::::::p          yyyyyyy
+                                              ppppppppp           ppppppppp
+
+                                           CHIP-8 Emulator
+                                               m0x <3
+*/
+
 import (
 	"fmt"
 	"os"
@@ -34,7 +65,7 @@ var fontset = []uint8{
 	0xF0, 0x80, 0xF0, 0x80, 0x80, // F
 }
 
-// CHIP-8
+// CHIP-8 structure that represents internal state and subsystems
 type Chip8 struct {
 	// CHIP-8 has 4K of memory
 	memory [4096]uint8

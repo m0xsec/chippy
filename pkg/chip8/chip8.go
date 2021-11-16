@@ -69,6 +69,9 @@ type Chip8 struct {
 	// Follows LIFO, used to call and return from subroutines
 	stack [16]uint16
 
+	// CHIP-8 Stack Pointer
+	sp uint16
+
 	// CHIP-8 Delay Timer
 	// Decremented at 60Hz until it reaches 0
 	dt uint8

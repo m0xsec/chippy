@@ -17,6 +17,7 @@
 
 ## References
 * https://tobiasvl.github.io/blog/write-a-chip-8-emulator/
+* https://github.com/mattmikolay/chip-8/wiki/CHIP%E2%80%908-Instruction-Set
 * https://chip-8.github.io/links/
 * https://multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/
 * https://en.wikipedia.org/wiki/CHIP-8

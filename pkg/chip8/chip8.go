@@ -157,6 +157,7 @@ func (c *Chip8) Cycle() {
 	// memory[pc+1] = 0xF0
 	// Resulting merge: 0xA2F0
 	c.oc = uint16(c.memory[c.pc])<<8 | uint16(c.memory[c.pc+1])
+	fmt.Printf("[0x%X]\n", c.oc)
 
 	// Decode & Execute Opcode
 	switch c.oc & 0xF000 {
@@ -167,7 +168,12 @@ func (c *Chip8) Cycle() {
 		// Need to compare the last 4 bits of the opcode
 		switch c.oc & 0x000F {
 		case 0x0000: // 0x00E0 Clear the display
-			// TODO: Implement 0x00E0
+			for h := 0; h < len(c.display); h++ {
+				for w := 0; w < len(c.display[h]); w++ {
+					c.display[h][w] = 0
+				}
+			}
+			c.pc += 2
 
 		case 0x000E: // 0x00EE Return from a subroutine
 			// TODO: Implement 0x00EE
@@ -177,19 +183,24 @@ func (c *Chip8) Cycle() {
 		}
 
 	case 0x1000: // 0x1NNN Jump to address NNN
-		// TODO: Implement 0x1NNN
+		c.pc = c.oc & 0x0FFF
 
 	case 0x6000: // 0x6XNN Set Register VX to NN
-		// TODO: Implement 0x6XNN
+		// Need to shift right 8 bytes to get X
+		c.v[(c.oc&0x0F00)>>8] = uint8(c.oc & 0x00FF)
+		c.pc += 2
 
 	case 0x7000: // 0x7XNN Add NN to Register VX
-		// TODO: Implement 0x7XNN
+		c.v[(c.oc&0x0F00)>>8] += uint8(c.oc & 0x00FF)
+		c.pc += 2
 
 	case 0xA000: // 0xANNN Set I to NNN
-		// TODO: Implement 0xANNN
+		c.i = c.oc & 0x0FFF
+		c.pc += 2
 
 	case 0xD000: // 0xDXYN Display (Drawing)
 		// TODO: Implement 0xDXYN
+		//c.pc += 2
 
 	// TODO: Implement remaining CHIP-8 insturctions
 

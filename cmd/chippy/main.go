@@ -46,12 +46,32 @@ func main() {
 		// CHIP-8 CPU Cycle (Fetch/Decode/Execute)
 		chippy.Cycle()
 
-		// TODO: CHIP-8 Drawing -- Utilize SDL2 renderer to draw CHIP-8 screen
-		// NOTE: We should only draw if required.
-
-		// Testing of rendering -- this should be removed later
+		// Render CHIP-8 Screen
+		// TODO: Might need to keep track of when to draw to prevent flickering,
+		//       instead of rendering every frame / cycle.
 		renderer.SetDrawColor(0, 0, 0, 255)
 		renderer.Clear()
+
+		buff := chippy.DisplayBuffer()
+		for h := 0; h < len(buff); h++ {
+			for w := 0; w < len(buff[h]); w++ {
+				// CHIP-8 pixels are colored based on 1 or 0
+				if buff[h][w] != 0 {
+					renderer.SetDrawColor(255, 255, 255, 255)
+				} else {
+					renderer.SetDrawColor(0, 0, 0, 255)
+				}
+
+				// Render, keeping our display scaling in mind
+				renderer.FillRect(&sdl.Rect{
+					Y: int32(h) * chip8.DISPLAY_MODIFIER,
+					X: int32(w) * chip8.DISPLAY_MODIFIER,
+					W: chip8.DISPLAY_MODIFIER,
+					H: chip8.DISPLAY_MODIFIER,
+				})
+			}
+		}
+
 		renderer.Present()
 
 		// Event handling

@@ -128,6 +128,11 @@ func (c *Chip8) LoadROM(file string) (int64, error) {
 	return stat.Size(), nil
 }
 
+// Returns the current CHIP-8 Display Buffer
+func (c *Chip8) DisplayBuffer() [DISPLAY_HEIGHT][DISPLAY_WIDTH]uint8 {
+	return c.display
+}
+
 // Cycle the CHIP-8 CPU
 func (c *Chip8) Cycle() {
 	// TODO: Implement CHIP-8 CPU

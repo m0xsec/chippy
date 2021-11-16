@@ -148,10 +148,54 @@ func (c *Chip8) DisplayBuffer() [DISPLAY_HEIGHT][DISPLAY_WIDTH]uint8 {
 	return c.display
 }
 
-// Cycle the CHIP-8 CPU
+// Cycle the CHIP-8 CPU (Fetch, Decode, Execute)
 func (c *Chip8) Cycle() {
-	// TODO: Implement CHIP-8 CPU
-	// This is the fetch-decode-execute loop
+	// Fetch Opcode (2 bytes), and merge into a single 16-bit value
+	// Todo this we shift left by 8 bytes and use bitwise OR to merge
+	// For example:
+	// memory[pc] = 0xA2
+	// memory[pc+1] = 0xF0
+	// Resulting merge: 0xA2F0
+	c.oc = uint16(c.memory[c.pc])<<8 | uint16(c.memory[c.pc+1])
+
+	// Decode & Execute Opcode
+	switch c.oc & 0xF000 {
+	// Instrucutions starting with 0x0
+	// 0x00E0 - Clear the display
+	// 0x00EE - Return from a subroutine
+	case 0x0000:
+		// Need to compare the last 4 bits of the opcode
+		switch c.oc & 0x000F {
+		case 0x0000: // 0x00E0 Clear the display
+			// TODO: Implement 0x00E0
+
+		case 0x000E: // 0x00EE Return from a subroutine
+			// TODO: Implement 0x00EE
+
+		default:
+			fmt.Printf("[0x0000] Unknown opcode: 0x%X\n", c.oc)
+		}
+
+	case 0x1000: // 0x1NNN Jump to address NNN
+		// TODO: Implement 0x1NNN
+
+	case 0x6000: // 0x6XNN Set Register VX to NN
+		// TODO: Implement 0x6XNN
+
+	case 0x7000: // 0x7XNN Add NN to Register VX
+		// TODO: Implement 0x7XNN
+
+	case 0xA000: // 0xANNN Set I to NNN
+		// TODO: Implement 0xANNN
+
+	case 0xD000: // 0xDXYN Display (Drawing)
+		// TODO: Implement 0xDXYN
+
+	// TODO: Implement remaining CHIP-8 insturctions
+
+	default:
+		fmt.Printf("Unknown opcode: 0x%X\n", c.oc)
+	}
 
 	// TODO: Handle Delay Timer
 

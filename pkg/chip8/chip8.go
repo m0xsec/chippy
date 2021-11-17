@@ -319,6 +319,26 @@ func (c *Chip8) Cycle() {
 			c.v[(c.oc&0x0F00)>>8] = (c.v[(c.oc&0x0F00)>>8] ^ c.v[(c.oc&0x00F0)>>4])
 			c.pc += 2
 
+		case 0x0004: // 0x8XY4 - Add Register VY to Register VX, set VF to 1 if carry, 0 if not
+			// Do we need to carry?
+			if (0xFF - c.v[(c.oc&0x0F00)>>8]) < c.v[(c.oc&0x00F0)>>4] {
+				c.v[0xF] = 1
+			} else {
+				c.v[0xF] = 0
+			}
+			c.v[(c.oc&0x0F00)>>8] += c.v[(c.oc&0x00F0)>>4]
+			c.pc += 2
+
+		case 0x0005: // 0x8XY5 - Subtract Register VY from Register VX, set VF to 0 if borrow, 1 if not
+			// If the first operand is larger than the second operand, set borrow flag
+			if c.v[(c.oc&0x0F00)>>8] > c.v[(c.oc&0x00F0)>>4] {
+				c.v[0xF] = 1
+			} else {
+				c.v[0xF] = 0
+			}
+			c.v[(c.oc&0x0F00)>>8] -= c.v[(c.oc&0x00F0)>>4]
+			c.pc += 2
+
 		default:
 			fmt.Printf("[0x8000] Unknown opcode: 0x%X\n", c.oc)
 		}

@@ -110,7 +110,8 @@ func main() {
 			}
 		}
 
-		// CHIP-8 Updates display at 60Hz, which is (1000/60)ms
-		sdl.Delay(1000 / 2)
+		// Maintain CHIP-8 Clock Speed, this is 60hz by default
+		// TODO: Make clock speed adjustable
+		sdl.Delay(1000 / chippy.ClockSpeed())
 	}
 }

@@ -91,6 +91,10 @@ type Chip8 struct {
 	// Current CHIP-8 Opcode
 	// Keeps track of the current instruction opcode
 	oc uint16
+
+	// Current CHIP-8 Clock Speed (Hz)
+	// Default is 60Hz
+	clockSpeed uint32
 }
 
 // Initializes the CHIP-8
@@ -101,7 +105,8 @@ func Init() Chip8 {
 		// from address 000 to 1FF. It would expect a CHIP-8 program to be
 		// loaded into memory after it, starting at address 200.
 		// For chippy, we will use 000 to 1FF for our font set :)
-		pc: 0x200,
+		pc:         0x200,
+		clockSpeed: 60,
 	}
 
 	// Load fontset into memory
@@ -111,6 +116,11 @@ func Init() Chip8 {
 	}
 
 	return chippy
+}
+
+// Returns the current CHIP-8 Clock Speed
+func (chippy *Chip8) ClockSpeed() uint32 {
+	return chippy.clockSpeed
 }
 
 // Returns the current CHIP-8 Display Buffer

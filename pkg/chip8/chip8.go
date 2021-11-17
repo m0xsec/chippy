@@ -95,6 +95,8 @@ type Chip8 struct {
 	// Current CHIP-8 Clock Speed (Hz)
 	// Default is 60Hz
 	clockSpeed uint32
+
+	//TODO: Need to add some way of handling keypad events
 }
 
 // Initializes the CHIP-8
@@ -244,20 +246,32 @@ func (c *Chip8) Cycle() {
 	/////////////////////////////////////////////////////////////////////////////////////////
 	// Instrucutions starting with 0x3
 	// 0x3XNN - Skip next instruction if VX equals NN
-	// TODO: Implement 0x03 instructions
-	// ...
+	case 0x3000: // 0x3XNN Skip next instruction if VX equals NN
+		if c.v[(c.oc&0x0F00)>>8] == uint8(c.oc&0x00FF) {
+			c.pc += 4
+		} else {
+			c.pc += 2
+		}
 
 	/////////////////////////////////////////////////////////////////////////////////////////
 	// Instrucutions starting with 0x4
 	// 0x4XNN - Skip next instruction if VX doesn't equal NN
-	// TODO: Implement 0x4 instructions
-	// ...
+	case 0x4000: //Skip next instruction if VX doesn't equal NN
+		if c.v[(c.oc&0x0F00)>>8] != uint8(c.oc&0x0FF) {
+			c.pc += 4
+		} else {
+			c.pc += 2
+		}
 
 	/////////////////////////////////////////////////////////////////////////////////////////
 	// Instrucutions starting with 0x5
 	// 0x5XY0 - Skip next instruction if VX equals VY
-	// TODO: Implement 0x5 instructions
-	// ...
+	case 0x5000:
+		if c.v[(c.oc&0x0F00)>>8] == c.v[(c.oc&0x0F00)>>12] {
+			c.pc += 4
+		} else {
+			c.pc += 2
+		}
 
 	/////////////////////////////////////////////////////////////////////////////////////////
 	// Instrucutions starting with 0x6
@@ -381,7 +395,7 @@ func (c *Chip8) Cycle() {
 		fmt.Printf("Unknown opcode: 0x%X\n", c.oc)
 	}
 
+	// NOTE: Timers decrement at 60Hz, independant of the clock speed used in our cycle loop
 	// TODO: Handle Delay Timer
-
 	// TODO: Handle Sound Timer w/ Beeping
 }

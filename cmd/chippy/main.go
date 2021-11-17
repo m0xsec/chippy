@@ -75,7 +75,7 @@ func main() {
 		overlay := debug.RenderOverlay(&chippy, renderer)
 
 		// Render CHIP-8 Screen
-		// TODO: Might need to keep track of when to draw to prevent flickering,
+		// NOTE: Might need to keep track of when to draw to prevent flickering,
 		//       instead of rendering every frame / cycle.
 		renderer.SetDrawColor(0, 0, 0, 255)
 		renderer.Clear()

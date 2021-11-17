@@ -296,11 +296,9 @@ func (c *Chip8) Cycle() {
 	// 0x8XY3 - Set Register VX to Register VX XOR Register VY
 	// 0x8XY4 - Add Register VY to Register VX, set VF to 1 if carry, 0 if not
 	// 0x8XY5 - Subtract Register VY from Register VX, set VF to 0 if borrow, 1 if not
-	// 0x8XY6 - Store the least significant bit of Register VX in VF, and then shift Register VX right by 1
+	// 0x8XY6 - Set VX to VY. Store the least significant bit of Register VX in VF, and then shift Register VX right by 1
 	// 0x8XY7 - Set Register VX to Register VY minus Register VX, set VF to 0 if borrow, 1 if not
-	// 0x8XYE - Store the most significant bit of Register VX in VF, and then shift Register VX left by 1
-	// TODO: Implement 0x8 instructions
-	// ...
+	// 0x8XYE - Set VX to VY. Store the most significant bit of Register VX in VF, and then shift Register VX left by 1
 	case 0x8000:
 		switch c.oc & 0x000F {
 		case 0x0000: // 0x8XY0 - Set Register VX to Register VY
@@ -337,6 +335,40 @@ func (c *Chip8) Cycle() {
 				c.v[0xF] = 0
 			}
 			c.v[(c.oc&0x0F00)>>8] -= c.v[(c.oc&0x00F0)>>4]
+			c.pc += 2
+
+		case 0x0006: // 0x8XY6 - Set VX to VY. Store the least significant bit of Register VX in VF, and then shift Register VX right by 1
+			// Set VX to VY
+			c.v[(c.oc&0x0F00)>>8] = c.v[(c.oc&0x00F0)>>4]
+
+			// Store least signigicant bit of VX in VF
+			c.v[0xF] = c.v[(c.oc&0x0F00)>>8] & 0x1
+
+			// Shift VX right by 1
+			c.v[(c.oc&0x0F00)>>8] >>= 1
+
+			c.pc += 2
+
+		case 0x0007: // 0x8XY7 - Set Register VX to Register VY minus Register VX, set VF to 0 if borrow, 1 if not
+			// Do we need to borrow for VY-VX?
+			if c.v[(c.oc&0x0F00)>>8] > c.v[(c.oc&0x00F0)>>4] {
+				c.v[0xF] = 0 // Set to 0 if borrow
+			} else {
+				c.v[0xF] = 1 // Set to 1 if no borrow is needed
+			}
+			c.v[(c.oc&0x0F00)>>8] = c.v[(c.oc&0x00F0)>>4] - c.v[(c.oc&0x0F00)>>8]
+			c.pc += 2
+
+		case 0x000E: // 0x8XYE - Set VX to VY. Store the most significant bit of Register VX in VF, and then shift Register VX left by 1
+			// Set VX to VY
+			c.v[(c.oc&0x0F00)>>8] = c.v[(c.oc&0x00F0)>>4]
+
+			// Store least signigicant bit of VX in VF
+			c.v[0xF] = c.v[(c.oc&0x0F00)>>8] & 0x1
+
+			// Shift VX left by 1
+			c.v[(c.oc&0x0F00)>>8] <<= 1
+
 			c.pc += 2
 
 		default:

@@ -8,3 +8,9 @@ https://github.com/daniel5151/AC8E/tree/master/roms
 
 `test_opcodes.ch8` - Test ROM that tests several opcodes.
 https://github.com/corax89/chip8-test-rom
+
+`chip8-picture.ch8` - Test ROM that displays a picture.
+https://github.com/loktar00/chip8/blob/master/roms/Chip8%20Picture.ch8
+
+`c8_test.ch8` - Test ROM that tests a bunch of instructions.
+https://github.com/Skosulor/c8int/tree/master/test

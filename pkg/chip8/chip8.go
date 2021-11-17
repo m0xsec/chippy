@@ -267,7 +267,7 @@ func (c *Chip8) Cycle() {
 	// Instrucutions starting with 0x5
 	// 0x5XY0 - Skip next instruction if VX equals VY
 	case 0x5000:
-		if c.v[(c.oc&0x0F00)>>8] == c.v[(c.oc&0x0F00)>>12] {
+		if c.v[(c.oc&0x0F00)>>8] == c.v[(c.oc&0x00F0)>>4] {
 			c.pc += 4
 		} else {
 			c.pc += 2
@@ -301,12 +301,37 @@ func (c *Chip8) Cycle() {
 	// 0x8XYE - Store the most significant bit of Register VX in VF, and then shift Register VX left by 1
 	// TODO: Implement 0x8 instructions
 	// ...
+	case 0x8000:
+		switch c.oc & 0x000F {
+		case 0x0000: // 0x8XY0 - Set Register VX to Register VY
+			c.v[(c.oc&0x0F00)>>8] = c.v[(c.oc&0x00F0)>>4]
+			c.pc += 2
+
+		case 0x0001: // 0x8XY1 - Set Register VX to Register VX OR Register VY
+			c.v[(c.oc&0x0F00)>>8] = (c.v[(c.oc&0x0F00)>>8] | c.v[(c.oc&0x00F0)>>4])
+			c.pc += 2
+
+		case 0x0002: // 0x8XY2 - Set Register VX to Register VX AND Register VY
+			c.v[(c.oc&0x0F00)>>8] = (c.v[(c.oc&0x0F00)>>8] & c.v[(c.oc&0x00F0)>>4])
+			c.pc += 2
+
+		case 0x0003: // 0x8XY3 - Set Register VX to Register VX XOR Register VY
+			c.v[(c.oc&0x0F00)>>8] = (c.v[(c.oc&0x0F00)>>8] ^ c.v[(c.oc&0x00F0)>>4])
+			c.pc += 2
+
+		default:
+			fmt.Printf("[0x8000] Unknown opcode: 0x%X\n", c.oc)
+		}
 
 	/////////////////////////////////////////////////////////////////////////////////////////
 	// Instrucutions starting with 0x9
 	// 0x9XY0 - Skip next instruction if VX doesn't equal VY
-	// TODO: Implement 0x9 instructions
-	// ...
+	case 0x9000:
+		if c.v[(c.oc&0x0F00)>>8] != c.v[(c.oc&0x00F0)>>4] {
+			c.pc += 4
+		} else {
+			c.pc += 2
+		}
 
 	/////////////////////////////////////////////////////////////////////////////////////////
 	// Instrucutions starting with 0xA

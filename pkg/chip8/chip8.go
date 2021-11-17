@@ -113,6 +113,26 @@ func Init() Chip8 {
 	return chippy
 }
 
+// Returns the current CHIP-8 Display Buffer
+func (c *Chip8) DisplayBuffer() [DISPLAY_HEIGHT][DISPLAY_WIDTH]uint8 {
+	return c.display
+}
+
+// Returns the current CHIP-8 Opcode
+func (c *Chip8) Opcode() uint16 {
+	return c.oc
+}
+
+// Returns the current CHIP-8 Program Counter
+func (c *Chip8) PC() uint16 {
+	return c.pc
+}
+
+// Returns the current CHIP-8 Index Register
+func (c *Chip8) I() uint16 {
+	return c.i
+}
+
 // Loads a CHIP-8 ROM into memory from the given file
 // Returns the size of the ROM, and an error if the ROM is invalid
 func (c *Chip8) LoadROM(file string) (int64, error) {
@@ -144,11 +164,6 @@ func (c *Chip8) LoadROM(file string) (int64, error) {
 	}
 
 	return stat.Size(), nil
-}
-
-// Returns the current CHIP-8 Display Buffer
-func (c *Chip8) DisplayBuffer() [DISPLAY_HEIGHT][DISPLAY_WIDTH]uint8 {
-	return c.display
 }
 
 // Cycle the CHIP-8 CPU (Fetch, Decode, Execute)

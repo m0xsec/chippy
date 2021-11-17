@@ -17,6 +17,7 @@ package main
 
 import (
 	"chippy/pkg/chip8"
+	"chippy/pkg/debug"
 	"fmt"
 
 	"github.com/veandco/go-sdl2/sdl"
@@ -47,6 +48,9 @@ func main() {
 	}
 	defer renderer.Destroy()
 
+	// Initialize our Debug Overlay
+	debug.Init()
+
 	// Initilaize CHIP-8 and load ROM :3
 	chippy := chip8.Init()
 	size, err := chippy.LoadROM("./roms/ibm_logo.ch8")
@@ -60,6 +64,9 @@ func main() {
 	for emulating {
 		// CHIP-8 CPU Cycle (Fetch/Decode/Execute)
 		chippy.Cycle()
+
+		// Update debug overlay
+		overlay := debug.RenderOverlay(&chippy, renderer)
 
 		// Render CHIP-8 Screen
 		// TODO: Might need to keep track of when to draw to prevent flickering,
@@ -87,6 +94,10 @@ func main() {
 			}
 		}
 
+		// Copy debug overlay to renderer
+		renderer.Copy(overlay, nil, &sdl.Rect{X: 0, Y: 0, W: 100, H: 100})
+
+		// Render to screen <3
 		renderer.Present()
 
 		// Event handling
@@ -100,6 +111,6 @@ func main() {
 		}
 
 		// CHIP-8 Updates display at 60Hz, which is (1000/60)ms
-		sdl.Delay(1000 / 60)
+		sdl.Delay(1000 / 2)
 	}
 }

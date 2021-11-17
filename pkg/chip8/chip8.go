@@ -106,6 +106,11 @@ func Init() Chip8 {
 		// loaded into memory after it, starting at address 200.
 		// For chippy, we will use 000 to 1FF for our font set :)
 		pc:         0x200,
+		oc:         0x0,
+		i:          0x0,
+		sp:         0x0,
+		dt:         0x0,
+		st:         0x0,
 		clockSpeed: 60,
 	}
 
@@ -206,13 +211,26 @@ func (c *Chip8) Cycle() {
 			c.pc += 2
 
 		case 0x000E: // 0x00EE Return from a subroutine
-			// TODO: Implement 0x00EE
+			// Decrease the stack pointer
+			// Set the PC to the stored return address
+			// Increment PC
+			c.sp -= 1
+			c.pc = c.stack[c.sp]
+			c.pc += 2
 
 		default:
 			fmt.Printf("[0x0000] Unknown opcode: 0x%X\n", c.oc)
 		}
 
 	case 0x1000: // 0x1NNN Jump to address NNN
+		c.pc = c.oc & 0x0FFF
+
+	case 0x2000: // 0x2NNN Call subroutine at NNN
+		// Store the current PC on the stack,
+		// and increase stack pointer since we put something on the stack
+		// Set the PC to the address NNN
+		c.stack[c.sp] = c.pc
+		c.sp += 1
 		c.pc = c.oc & 0x0FFF
 
 	case 0x6000: // 0x6XNN Set Register VX to NN

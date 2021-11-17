@@ -21,6 +21,7 @@ import (
 	"fmt"
 
 	"github.com/veandco/go-sdl2/sdl"
+	"github.com/veandco/go-sdl2/ttf"
 )
 
 func main() {
@@ -31,6 +32,13 @@ func main() {
 		panic(err)
 	}
 	defer sdl.Quit()
+
+	// Initialize SDL2 TTF
+	fmt.Println("Initializing SDL2 TTF...")
+	err := ttf.Init()
+	if err != nil {
+		fmt.Println("Failed to initialize TTF: " + err.Error())
+	}
 
 	// Create SDL2 window
 	window, err := sdl.CreateWindow("chippy <3", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
@@ -48,12 +56,9 @@ func main() {
 	}
 	defer renderer.Destroy()
 
-	// Initialize our Debug Overlay
-	debug.Init()
-
 	// Initilaize CHIP-8 and load ROM :3
 	chippy := chip8.Init()
-	size, err := chippy.LoadROM("./roms/ibm_logo.ch8")
+	size, err := chippy.LoadROM("./roms/test_opcode.ch8")
 	if err != nil {
 		panic(err)
 	}
@@ -61,6 +66,7 @@ func main() {
 
 	// Emulator loop
 	emulating := true
+	displayOverlay := true
 	for emulating {
 		// CHIP-8 CPU Cycle (Fetch/Decode/Execute)
 		chippy.Cycle()
@@ -95,7 +101,9 @@ func main() {
 		}
 
 		// Copy debug overlay to renderer
-		renderer.Copy(overlay, nil, &sdl.Rect{X: 0, Y: 0, W: 100, H: 100})
+		if displayOverlay {
+			renderer.Copy(overlay, nil, &sdl.Rect{X: 0, Y: 0, W: 100, H: 100})
+		}
 
 		// Render to screen <3
 		renderer.Present()
@@ -103,10 +111,22 @@ func main() {
 		// Event handling
 		// TODO: Add CHIP-8 keyboard support, per spec
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
-			switch event.(type) {
+			switch t := event.(type) {
 			case *sdl.QuitEvent:
-				println("Quit")
+				println("kthxbai<3")
 				emulating = false
+
+			case *sdl.KeyboardEvent:
+				switch t.Keysym.Sym {
+				case sdl.K_ESCAPE:
+					println("kthxbai<3")
+					emulating = false
+
+				case sdl.K_LALT:
+					if t.State == sdl.PRESSED {
+						displayOverlay = !displayOverlay
+					}
+				}
 			}
 		}
 

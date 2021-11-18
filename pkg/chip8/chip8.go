@@ -17,7 +17,9 @@ package chip8
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
+	"time"
 )
 
 // CHIP-8 Display Width 64px
@@ -397,12 +399,20 @@ func (c *Chip8) Cycle() {
 	// 0xBNNN - Jump to address NNN + V0
 	// TODO: Implement 0xB instructions
 	// ...
+	case 0xB000: // 0xBNNN - Jump to address NNN + V0
+		// NOTE: This is the implementation for the original COSMAC VIP
+		//       interpreter. It is not an implementation of the CHIP-48
+		//       and SUPER-CHIP 0xBXNN instruction.
+		c.i = (c.oc & 0x0FFF) + uint16(c.v[0x0])
+		c.pc += 2
 
 	/////////////////////////////////////////////////////////////////////////////////////////
 	// Instrucutions starting with 0xC
-	// 0xCXNN - Set VX to a random number and NN
-	// TODO: Implement 0xC instructions
-	// ...
+	// 0xCXNN - Set VX to a random number AND NN
+	case 0xC000: // 0xCXNN - Set VX to a random number AND NN
+		rand.Seed(time.Now().UnixNano())
+		// Remeber to keep the rand num within range, 0xFF
+		c.v[(c.oc&0x0F00)>>8] = uint8(rand.Int()%0xFF) & uint8((c.oc & 0x00FF))
 
 	/////////////////////////////////////////////////////////////////////////////////////////
 	// Instrucutions starting with 0xD

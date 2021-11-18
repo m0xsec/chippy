@@ -397,8 +397,6 @@ func (c *Chip8) Cycle() {
 	/////////////////////////////////////////////////////////////////////////////////////////
 	// Instrucutions starting with 0xB
 	// 0xBNNN - Jump to address NNN + V0
-	// TODO: Implement 0xB instructions
-	// ...
 	case 0xB000: // 0xBNNN - Jump to address NNN + V0
 		// NOTE: This is the implementation for the original COSMAC VIP
 		//       interpreter. It is not an implementation of the CHIP-48

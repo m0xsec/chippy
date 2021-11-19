@@ -1,4 +1,3 @@
-# chippy
 ```
 
          dP       oo

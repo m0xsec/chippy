@@ -109,7 +109,6 @@ func main() {
 		renderer.Present()
 
 		// Event handling
-		// TODO: Add CHIP-8 keyboard support, per spec
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch t := event.(type) {
 			case *sdl.QuitEvent:

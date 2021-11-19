@@ -522,12 +522,16 @@ func (c *Chip8) Cycle() {
 			} else {
 				c.pc += 2
 			}
+
 		case 0x0001: // 0xEXA1 - Skip next instruction if key stored in VX isn't pressed
 			if c.ks[c.v[(c.oc&0x0F00)>>8]] == 0 {
 				c.pc += 4
 			} else {
 				c.pc += 2
 			}
+
+		default:
+			fmt.Printf("[0xE000] Unknown opcode: 0x%X\n", c.oc)
 		}
 
 	/////////////////////////////////////////////////////////////////////////////////////////
@@ -546,12 +550,72 @@ func (c *Chip8) Cycle() {
 	//			I is set to I + X + 1 after operation
 	// TODO: Implement 0xF instructions
 	// ...
+	case 0xF000:
+		switch c.oc & 0x00FF {
+		case 0x0007: // 0xFX07 - Set VX to the value of the delay timer
+			c.v[(c.oc&0x0F00)>>8] = c.dt
+			c.pc += 2
+
+		case 0x000A: // 0xFX0A - Wait for a key press, store the value of the key in VX
+			for i := 0; i < len(c.ks); i++ {
+				if c.ks[i] == 1 {
+					c.v[(c.oc&0x0F00)>>8] = uint8(i)
+					c.pc += 2
+					break
+				}
+			}
+
+		case 0x0015: // 0xFX15 - Set the delay timer to VX
+			c.dt = c.v[(c.oc&0x0F00)>>8]
+			c.pc += 2
+
+		case 0x0018: // 0xFX18 - Set the sound timer to VX
+			c.st = c.v[(c.oc&0x0F00)>>8]
+			c.pc += 2
+
+		case 0x001E: // 0xFX1E - Add VX to I
+			// NOTE: The Amiga interpreter will set VF to 1 if I overflows from 0FFF to above 1000, which
+			//       is outside of the normal addressing range. The COSMAC VIP did not do this.
+			//       The game Spacefight 2091! is known to rely on the Amiga behavior.
+			// FIXME: Correct this so Spacefight 2091! works with chippy <3
+
+			c.i += uint16(c.v[(c.oc&0x0F00)>>8])
+			c.pc += 2
+
+		case 0x0029: // 0xFX29 - Set I to the location of the sprite for the character in VX
+			// TODO: Implement this
+
+		case 0x0033: // 0xFX33 - Store the binary-coded decimal representation of VX in memory locations I, I+1, and I+2
+			// TODO: Implement this
+
+		case 0x0055: // 0xFX55 - Store the values of registers V0 to VX inclusive in memory starting at address I
+			// I is set to I + X + 1 after operation
+
+			// TODO: Implement this
+
+		case 0x0065: // 0xFX65 - Fill registers V0 to VX inclusive with the values stored in memory starting at address I
+			// I is set to I + X + 1 after operation
+
+			// TODO: Implement this
+
+		default:
+			fmt.Printf("[0xF000] Unknown opcode: 0x%X\n", c.oc)
+
+		}
 
 	default:
 		fmt.Printf("Unknown opcode: 0x%X\n", c.oc)
 	}
 
-	// NOTE: Timers decrement at 60Hz, independant of the clock speed used in our cycle loop
-	// TODO: Handle Delay Timer
-	// TODO: Handle Sound Timer w/ Beeping
+	// Update timers
+	// FIXME: Both timers are supposed to decrement at 60 hz, independant
+	//        of the clock speed used for the cycle / SDL emulate loop
+	if c.dt > 0 {
+		c.dt -= 1
+	}
+	if c.st > 0 {
+		// TODO: Add option for actually making a "beep" sound
+		fmt.Println("[ST] Beep!")
+		c.st -= 1
+	}
 }

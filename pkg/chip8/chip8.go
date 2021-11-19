@@ -252,7 +252,7 @@ func (c *Chip8) Cycle() {
 	// memory[pc+1] = 0xF0
 	// Resulting merge: 0xA2F0
 	c.oc = uint16(c.memory[c.pc])<<8 | uint16(c.memory[c.pc+1])
-	fmt.Printf("[0x%X]\n", c.oc)
+	//fmt.Printf("[0x%X]\n", c.oc)
 
 	// Decode & Execute Opcode
 	// Ex: 0xA2F0 & 0xF000 -> 0xA000
@@ -507,7 +507,7 @@ func (c *Chip8) Cycle() {
 			}
 		}
 
-		fmt.Printf("[0xDXYN] X: %d, Y: %d, N: %d\n", x, y, n)
+		//fmt.Printf("[0xDXYN] X: %d, Y: %d, N: %d\n", x, y, n)
 		c.pc += 2
 
 	/////////////////////////////////////////////////////////////////////////////////////////

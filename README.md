@@ -14,6 +14,9 @@
 					m0x <3
 ```
 
+![<3](https://github.com/m0xxz/chippy/blob/main/assets/chippy_test.png?raw=true)
+
+chippy is a CHIP-8 emulator written in Go. The core CHIP-8 instructions are implemented and undergoing testing. This project is a work in progress <3
 
 ## References
 * https://tobiasvl.github.io/blog/write-a-chip-8-emulator/

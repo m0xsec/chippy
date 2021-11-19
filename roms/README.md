@@ -18,5 +18,11 @@ https://github.com/Skosulor/c8int/tree/master/test
 `tron.ch8` - CHIP-8 Tron game
 https://github.com/kripod/chip8-roms/tree/master/games
 
-`petdog.ch8` - Pet Dog from Octojan2
+`petdog.ch8` - Pet Dog from Octojam2
 https://johnearnest.github.io/chip8Archive/play.html?p=petdog
+
+`space_invaders.ch8` - Space Invaders
+https://github.com/dmatlack/chip8/tree/master/roms/games
+
+`trip8.ch8 - Trip8 Demo
+https://github.com/dmatlack/chip8/tree/master/roms/demos

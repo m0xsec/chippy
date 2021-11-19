@@ -583,20 +583,36 @@ func (c *Chip8) Cycle() {
 			c.pc += 2
 
 		case 0x0029: // 0xFX29 - Set I to the location of the sprite for the character in VX
-			// TODO: Implement this
+			// Fonts are loaded withing the first 512 bytes (0x200) of memory and are 4x5
+			// TODO: Check the math on this, does this work?
+			c.i = uint16(c.v[(c.oc&0x0F00)>>8] * 0x5)
+			c.pc += 2
 
 		case 0x0033: // 0xFX33 - Store the binary-coded decimal representation of VX in memory locations I, I+1, and I+2
-			// TODO: Implement this
+			c.memory[c.i] = c.v[(c.oc&0x0F00)>>8] / 100
+			c.memory[c.i+1] = (c.v[(c.oc&0x0F00)>>8] / 10) % 10
+			c.memory[c.i+2] = (c.v[(c.oc&0x0F00)>>8] % 100) % 10
+			c.pc += 2
 
 		case 0x0055: // 0xFX55 - Store the values of registers V0 to VX inclusive in memory starting at address I
 			// I is set to I + X + 1 after operation
 
-			// TODO: Implement this
+			for i := uint16(0); i <= ((c.oc & 0x0F00) >> 8); i++ {
+				c.memory[c.i+i] = c.v[i]
+			}
+
+			c.i += ((c.oc & 0x0F00) >> 8) + 1
+			c.pc += 2
 
 		case 0x0065: // 0xFX65 - Fill registers V0 to VX inclusive with the values stored in memory starting at address I
 			// I is set to I + X + 1 after operation
 
-			// TODO: Implement this
+			for i := uint16(0); i <= ((c.oc & 0x0F00) >> 8); i++ {
+				c.v[i] = c.memory[c.i+i]
+			}
+
+			c.i += ((c.oc & 0x0F00) >> 8) + 1
+			c.pc += 2
 
 		default:
 			fmt.Printf("[0xF000] Unknown opcode: 0x%X\n", c.oc)

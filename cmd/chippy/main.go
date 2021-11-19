@@ -126,6 +126,118 @@ func main() {
 					if t.State == sdl.PRESSED {
 						displayOverlay = !displayOverlay
 					}
+
+				case chippy.KeyMap()[0x0]:
+					if t.State == sdl.PRESSED {
+						chippy.KeyPress(0x0)
+					} else {
+						chippy.KeyRelease(0x0)
+					}
+
+				case chippy.KeyMap()[0x1]:
+					if t.State == sdl.PRESSED {
+						chippy.KeyPress(0x1)
+					} else {
+						chippy.KeyRelease(0x1)
+					}
+
+				case chippy.KeyMap()[0x2]:
+					if t.State == sdl.PRESSED {
+						chippy.KeyPress(0x2)
+					} else {
+						chippy.KeyRelease(0x2)
+					}
+
+				case chippy.KeyMap()[0x3]:
+					if t.State == sdl.PRESSED {
+						chippy.KeyPress(0x3)
+					} else {
+						chippy.KeyRelease(0x3)
+					}
+
+				case chippy.KeyMap()[0x4]:
+					if t.State == sdl.PRESSED {
+						chippy.KeyPress(0x4)
+					} else {
+						chippy.KeyRelease(0x4)
+					}
+
+				case chippy.KeyMap()[0x5]:
+					if t.State == sdl.PRESSED {
+						chippy.KeyPress(0x5)
+					} else {
+						chippy.KeyRelease(0x5)
+					}
+
+				case chippy.KeyMap()[0x6]:
+					if t.State == sdl.PRESSED {
+						chippy.KeyPress(0x6)
+					} else {
+						chippy.KeyRelease(0x6)
+					}
+
+				case chippy.KeyMap()[0x7]:
+					if t.State == sdl.PRESSED {
+						chippy.KeyPress(0x7)
+					} else {
+						chippy.KeyRelease(0x7)
+					}
+
+				case chippy.KeyMap()[0x8]:
+					if t.State == sdl.PRESSED {
+						chippy.KeyPress(0x8)
+					} else {
+						chippy.KeyRelease(0x8)
+					}
+
+				case chippy.KeyMap()[0x9]:
+					if t.State == sdl.PRESSED {
+						chippy.KeyPress(0x9)
+					} else {
+						chippy.KeyRelease(0x9)
+					}
+
+				case chippy.KeyMap()[0xA]:
+					if t.State == sdl.PRESSED {
+						chippy.KeyPress(0xA)
+					} else {
+						chippy.KeyRelease(0xA)
+					}
+
+				case chippy.KeyMap()[0xB]:
+					if t.State == sdl.PRESSED {
+						chippy.KeyPress(0xB)
+					} else {
+						chippy.KeyRelease(0xB)
+					}
+
+				case chippy.KeyMap()[0xC]:
+					if t.State == sdl.PRESSED {
+						chippy.KeyPress(0xC)
+					} else {
+						chippy.KeyRelease(0xC)
+					}
+
+				case chippy.KeyMap()[0xD]:
+					if t.State == sdl.PRESSED {
+						chippy.KeyPress(0xD)
+					} else {
+						chippy.KeyRelease(0xD)
+					}
+
+				case chippy.KeyMap()[0xE]:
+					if t.State == sdl.PRESSED {
+						chippy.KeyPress(0xE)
+					} else {
+						chippy.KeyRelease(0xE)
+					}
+
+				case chippy.KeyMap()[0xF]:
+					if t.State == sdl.PRESSED {
+						chippy.KeyPress(0xF)
+					} else {
+						chippy.KeyRelease(0xF)
+					}
 				}
 			}
 		}

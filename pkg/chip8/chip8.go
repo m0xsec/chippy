@@ -20,6 +20,8 @@ import (
 	"math/rand"
 	"os"
 	"time"
+
+	"github.com/veandco/go-sdl2/sdl"
 )
 
 // CHIP-8 Display Width 64px
@@ -98,7 +100,12 @@ type Chip8 struct {
 	// Default is 60Hz
 	clockSpeed uint32
 
-	//TODO: Need to add some way of handling keypad events
+	// CHIP-8 Keypad Mapping 0-F, to SDL Keys
+	km [0xF + 1]sdl.Keycode
+
+	// CHIP-8 Keypad State, Keys 0-F
+	// 1 is pressed, 0 is not pressed
+	ks [0xF + 1]int
 }
 
 // Initializes the CHIP-8
@@ -122,6 +129,34 @@ func Init() Chip8 {
 	fmt.Println("Loading font set into memory...")
 	for i := 0; i < len(fontset); i++ {
 		chippy.memory[i] = fontset[i]
+	}
+
+	// Populate CHIP-8 Keypad layout
+	// COSMAC VIP Keypad layout
+	// 1	2	3	C
+	// 4	5	6	D
+	// 7	8	9	E
+	// A	0	B	F
+	chippy.km[0x0] = sdl.K_0
+	chippy.km[0x1] = sdl.K_1
+	chippy.km[0x2] = sdl.K_2
+	chippy.km[0x3] = sdl.K_3
+	chippy.km[0x4] = sdl.K_4
+	chippy.km[0x5] = sdl.K_5
+	chippy.km[0x6] = sdl.K_6
+	chippy.km[0x7] = sdl.K_7
+	chippy.km[0x8] = sdl.K_8
+	chippy.km[0x9] = sdl.K_9
+	chippy.km[0xA] = sdl.K_a
+	chippy.km[0xB] = sdl.K_b
+	chippy.km[0xC] = sdl.K_c
+	chippy.km[0xD] = sdl.K_d
+	chippy.km[0xE] = sdl.K_e
+	chippy.km[0xF] = sdl.K_f
+
+	// Reset Keypad State
+	for i := 0; i < len(chippy.ks); i++ {
+		chippy.ks[i] = 0
 	}
 
 	return chippy
@@ -150,6 +185,29 @@ func (c *Chip8) PC() uint16 {
 // Returns the current CHIP-8 Index Register
 func (c *Chip8) I() uint16 {
 	return c.i
+}
+
+// Returns the current CHIP-8 Keypad Mapping
+func (c *Chip8) KeyMap() [0xF + 1]sdl.Keycode {
+	return c.km
+}
+
+// Set state to pressed for the given key
+func (c *Chip8) KeyPress(kc int) {
+	if kc >= 0x0 && kc <= 0xF {
+		c.ks[kc] = 1
+
+		fmt.Printf("Key %X pressed\n", kc)
+	}
+}
+
+// Set state to released for the given key
+func (c *Chip8) KeyRelease(kc int) {
+	if kc >= 0x0 && kc <= 0xF {
+		c.ks[kc] = 0
+
+		fmt.Printf("Key %X released\n", kc)
+	}
 }
 
 // Loads a CHIP-8 ROM into memory from the given file
@@ -456,8 +514,21 @@ func (c *Chip8) Cycle() {
 	// Instrucutions starting with 0xE
 	// 0xEX9E - Skip next instruction if key stored in VX is pressed
 	// 0xEXA1 - Skip next instruction if key stored in VX isn't pressed
-	// TODO: Implement 0xE instructions
-	// ...
+	case 0xE000:
+		switch c.oc & 0x000F {
+		case 0x000E: // 0xEX9E - Skip next instruction if key stored in VX is pressed
+			if c.ks[c.v[(c.oc&0x0F00)>>8]] == 1 {
+				c.pc += 4
+			} else {
+				c.pc += 2
+			}
+		case 0x0001: // 0xEXA1 - Skip next instruction if key stored in VX isn't pressed
+			if c.ks[c.v[(c.oc&0x0F00)>>8]] == 0 {
+				c.pc += 4
+			} else {
+				c.pc += 2
+			}
+		}
 
 	/////////////////////////////////////////////////////////////////////////////////////////
 	// Instrucutions starting with 0xF

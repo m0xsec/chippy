@@ -23,3 +23,4 @@ chippy is a CHIP-8 emulator written in Go. The core CHIP-8 instructions are impl
 * https://chip-8.github.io/links/
 * https://multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/
 * https://en.wikipedia.org/wiki/CHIP-8
+* https://github.com/AfBu/haxe-CHIP-8-emulator/wiki/(Super)CHIP-8-Secrets#speed-of-emulation

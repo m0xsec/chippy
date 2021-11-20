@@ -122,7 +122,7 @@ func Init() Chip8 {
 		sp:         0x0,
 		dt:         0x0,
 		st:         0x0,
-		clockSpeed: 60,
+		clockSpeed: 500,
 	}
 
 	// Zero out memory
@@ -274,7 +274,7 @@ func (c *Chip8) Cycle() {
 	// memory[pc+1] = 0xF0
 	// Resulting merge: 0xA2F0
 	c.oc = uint16(c.memory[c.pc])<<8 | uint16(c.memory[c.pc+1])
-	fmt.Printf("[0x%X]\n", c.oc)
+	//fmt.Printf("[0x%X]\n", c.oc)
 
 	// Decode & Execute Opcode
 	// Ex: 0xA2F0 & 0xF000 -> 0xA000
@@ -496,6 +496,7 @@ func (c *Chip8) Cycle() {
 		rand.Seed(time.Now().UnixNano())
 		// Remeber to keep the rand num within range, 0xFF
 		c.v[(c.oc&0x0F00)>>8] = uint8(rand.Int()%0xFF) & uint8((c.oc & 0x00FF))
+		c.pc += 2
 
 	/////////////////////////////////////////////////////////////////////////////////////////
 	// Instrucutions starting with 0xD

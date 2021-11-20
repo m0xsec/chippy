@@ -58,7 +58,7 @@ func main() {
 
 	// Initilaize CHIP-8 and load ROM :3
 	chippy := chip8.Init()
-	size, err := chippy.LoadROM("./roms/test_opcode.ch8")
+	size, err := chippy.LoadROM("./roms/trip8.ch8")
 	if err != nil {
 		panic(err)
 	}
@@ -244,8 +244,9 @@ func main() {
 			}
 		}
 
-		// Maintain CHIP-8 Clock Speed, this is 60hz by default
+		// Maintain CHIP-8 Clock Speed, this is ~500hz by default
 		// TODO: Make clock speed adjustable
+		// TODO: Make sure display is updating at 60hz (60 FPS)?
 		sdl.Delay(1000 / chippy.ClockSpeed())
 	}
 }

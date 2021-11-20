@@ -125,6 +125,28 @@ func Init() Chip8 {
 		clockSpeed: 60,
 	}
 
+	// Zero out memory
+	for i := 0; i < len(chippy.memory); i++ {
+		chippy.memory[i] = 0x0
+	}
+
+	// Zero out stack
+	for i := 0; i < len(chippy.stack); i++ {
+		chippy.stack[i] = 0x0
+	}
+
+	// Zero out registers
+	for i := 0; i < len(chippy.v); i++ {
+		chippy.v[i] = 0x0
+	}
+
+	// Zeor out display
+	for h := 0; h < len(chippy.display); h++ {
+		for w := 0; w < len(chippy.display[h]); w++ {
+			chippy.display[h][w] = 0x0
+		}
+	}
+
 	// Load fontset into memory
 	fmt.Println("Loading font set into memory...")
 	for i := 0; i < len(fontset); i++ {
@@ -252,7 +274,7 @@ func (c *Chip8) Cycle() {
 	// memory[pc+1] = 0xF0
 	// Resulting merge: 0xA2F0
 	c.oc = uint16(c.memory[c.pc])<<8 | uint16(c.memory[c.pc+1])
-	//fmt.Printf("[0x%X]\n", c.oc)
+	fmt.Printf("[0x%X]\n", c.oc)
 
 	// Decode & Execute Opcode
 	// Ex: 0xA2F0 & 0xF000 -> 0xA000
@@ -269,7 +291,7 @@ func (c *Chip8) Cycle() {
 		case 0x0000: // 0x00E0 Clear the display
 			for h := 0; h < len(c.display); h++ {
 				for w := 0; w < len(c.display[h]); w++ {
-					c.display[h][w] = 0
+					c.display[h][w] = 0x0
 				}
 			}
 			c.pc += 2
@@ -398,8 +420,10 @@ func (c *Chip8) Cycle() {
 			c.pc += 2
 
 		case 0x0006: // 0x8XY6 - Set VX to VY. Store the least significant bit of Register VX in VF, and then shift Register VX right by 1
+			// NOTE: Modern implementations ignore VY completely
+			//       Treating this as optional so modern ROMs and tests pass
 			// Set VX to VY
-			c.v[(c.oc&0x0F00)>>8] = c.v[(c.oc&0x00F0)>>4]
+			//c.v[(c.oc&0x0F00)>>8] = c.v[(c.oc&0x00F0)>>4]
 
 			// Store least signigicant bit of VX in VF
 			c.v[0xF] = c.v[(c.oc&0x0F00)>>8] & 0x1
@@ -420,11 +444,13 @@ func (c *Chip8) Cycle() {
 			c.pc += 2
 
 		case 0x000E: // 0x8XYE - Set VX to VY. Store the most significant bit of Register VX in VF, and then shift Register VX left by 1
+			// NOTE: Modern implementations ignore VY completely
+			//       Treating this as optional so modern ROMs and tests pass
 			// Set VX to VY
-			c.v[(c.oc&0x0F00)>>8] = c.v[(c.oc&0x00F0)>>4]
+			//c.v[(c.oc&0x0F00)>>8] = c.v[(c.oc&0x00F0)>>4]
 
-			// Store least signigicant bit of VX in VF
-			c.v[0xF] = c.v[(c.oc&0x0F00)>>8] & 0x1
+			// Store most signifiant bit of VX in VF
+			c.v[0xF] = c.v[(c.oc&0x0F00)>>8] >> 7
 
 			// Shift VX left by 1
 			c.v[(c.oc&0x0F00)>>8] <<= 1
@@ -459,8 +485,9 @@ func (c *Chip8) Cycle() {
 		// NOTE: This is the implementation for the original COSMAC VIP
 		//       interpreter. It is not an implementation of the CHIP-48
 		//       and SUPER-CHIP 0xBXNN instruction.
-		c.i = (c.oc & 0x0FFF) + uint16(c.v[0x0])
-		c.pc += 2
+		/*c.i = (c.oc & 0x0FFF) + uint16(c.v[0x0])
+		c.pc += 2*/
+		c.pc = (c.oc & 0x0FFF) + uint16(c.v[0x0])
 
 	/////////////////////////////////////////////////////////////////////////////////////////
 	// Instrucutions starting with 0xC
@@ -488,20 +515,13 @@ func (c *Chip8) Cycle() {
 		// Loop through the height (rows)
 		for i := 0; i < int(n); i++ {
 			// Fetch Nth byte of sprite data, at I register + i
-			byte := c.memory[c.i+uint16(i)]
+			b := c.memory[c.i+uint16(i)]
 
 			// Each sprite row, there are 8 bits for each pixel
 			for j := 0; j < 8; j++ {
 				// Is the current pixel set?
-				if byte&(0x80>>uint8(j)) != 0 {
-					// Is that display pixel at X,Y also set?
-					if c.display[y+uint8(i)][x+uint8(j)] == 1 {
-						// Turn off the pixel, and set VF to 1
-						c.display[y+uint8(i)][x+uint8(j)] = 0
-						c.v[0xF] = 1
-					}
-
-					// Turn on display pixel
+				if b&(0x80>>uint8(j)) != 0 {
+					c.v[0xF] = c.display[y+uint8(i)][x+uint8(j)] & 1
 					c.display[y+uint8(i)][x+uint8(j)] ^= 1
 				}
 			}
@@ -548,8 +568,6 @@ func (c *Chip8) Cycle() {
 	//			I is set to I + X + 1 after operation
 	// 0xFX65 - Fill registers V0 to VX inclusive with the values stored in memory starting at address I
 	//			I is set to I + X + 1 after operation
-	// TODO: Implement 0xF instructions
-	// ...
 	case 0xF000:
 		switch c.oc & 0x00FF {
 		case 0x0007: // 0xFX07 - Set VX to the value of the delay timer
@@ -577,7 +595,11 @@ func (c *Chip8) Cycle() {
 			// NOTE: The Amiga interpreter will set VF to 1 if I overflows from 0FFF to above 1000, which
 			//       is outside of the normal addressing range. The COSMAC VIP did not do this.
 			//       The game Spacefight 2091! is known to rely on the Amiga behavior.
-			// FIXME: Correct this so Spacefight 2091! works with chippy <3
+			if (c.i + uint16(c.v[(c.oc&0x0F00)>>8])) > 0xFFF {
+				c.v[0xF] = 1
+			} else {
+				c.v[0xF] = 0
+			}
 
 			c.i += uint16(c.v[(c.oc&0x0F00)>>8])
 			c.pc += 2
@@ -600,8 +622,9 @@ func (c *Chip8) Cycle() {
 			for i := uint16(0); i <= ((c.oc & 0x0F00) >> 8); i++ {
 				c.memory[c.i+i] = c.v[i]
 			}
-
-			c.i += ((c.oc & 0x0F00) >> 8) + 1
+			// NOTE: The original CHIP-8 interpreter for the COSMAC VIP did I+X+1 here
+			//       This will break modern ROMs and cause test failures (bc_test for example)
+			//c.i += ((c.oc & 0x0F00) >> 8) + 1
 			c.pc += 2
 
 		case 0x0065: // 0xFX65 - Fill registers V0 to VX inclusive with the values stored in memory starting at address I
@@ -610,8 +633,9 @@ func (c *Chip8) Cycle() {
 			for i := uint16(0); i <= ((c.oc & 0x0F00) >> 8); i++ {
 				c.v[i] = c.memory[c.i+i]
 			}
-
-			c.i += ((c.oc & 0x0F00) >> 8) + 1
+			// NOTE: The original CHIP-8 interpreter for the COSMAC VIP did I+X+1 here
+			//       This will break modern ROMs and cause test failures (bc_test for example)
+			//c.i += ((c.oc & 0x0F00) >> 8) + 1
 			c.pc += 2
 
 		default:

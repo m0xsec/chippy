@@ -72,7 +72,10 @@ func main() {
 		chippy.Cycle()
 
 		// Update debug overlay
-		overlay := debug.RenderOverlay(&chippy, renderer)
+		var overlay *sdl.Texture
+		if displayOverlay {
+			overlay = debug.RenderOverlay(&chippy, renderer)
+		}
 
 		// Render CHIP-8 Screen
 		// NOTE: Might need to keep track of when to draw to prevent flickering,

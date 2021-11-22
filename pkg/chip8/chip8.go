@@ -649,7 +649,7 @@ func (c *Chip8) Cycle() {
 	}
 
 	// Update timers
-	// FIXME: Both timers are supposed to decrement at 60 hz, independant
+	// FIXME: Both timers are supposed to decrement at 60 hz, independent
 	//        of the clock speed used for the cycle / SDL emulate loop
 	if c.dt > 0 {
 		c.dt -= 1

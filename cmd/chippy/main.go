@@ -28,6 +28,7 @@ func main() {
 	fmt.Println("henlo from chippy <3")
 
 	// Initialize SDL2
+	fmt.Println("Initializing SDL2...")
 	if err := sdl.Init(sdl.INIT_EVERYTHING); err != nil {
 		panic(err)
 	}
@@ -58,7 +59,7 @@ func main() {
 
 	// Initilaize CHIP-8 and load ROM :3
 	chippy := chip8.Init()
-	size, err := chippy.LoadROM("./roms/trip8.ch8")
+	size, err := chippy.LoadROM("./roms/space_invaders.ch8")
 	if err != nil {
 		panic(err)
 	}

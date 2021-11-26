@@ -18,6 +18,7 @@ package main
 import (
 	"chippy/pkg/chip8"
 	"chippy/pkg/debug"
+	"flag"
 	"fmt"
 
 	"github.com/veandco/go-sdl2/sdl"
@@ -26,6 +27,11 @@ import (
 
 func main() {
 	fmt.Println("henlo from chippy <3")
+
+	// Get ROM command line argument
+	// TODO: Do some error checking here, how can we only load CHIP-8 roms?
+	rom := flag.String("rom", "./roms/test_opcode.ch8", "Path to CHIP-8 ROM")
+	flag.Parse()
 
 	// Initialize SDL2
 	fmt.Println("Initializing SDL2...")
@@ -59,7 +65,7 @@ func main() {
 
 	// Initilaize CHIP-8 and load ROM :3
 	chippy := chip8.Init()
-	size, err := chippy.LoadROM("./roms/space_invaders.ch8")
+	size, err := chippy.LoadROM(*rom)
 	if err != nil {
 		panic(err)
 	}
